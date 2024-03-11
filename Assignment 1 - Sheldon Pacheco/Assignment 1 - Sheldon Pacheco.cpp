@@ -15,7 +15,7 @@ public:
 
 class Player : public GameObject {
 public:
-    Player() : name("No Player"), health(0), role("No Role"), race("No Race"), specialAttackDamage(0), normalAttackDamage(0){}
+    Player() : name("No Player"), health(0), role("No Role"), race("No Race"), specialAttackDamage(0), normalAttackDamage(0), battleWins(0){}
 
     
     string GetName() const {
@@ -49,7 +49,13 @@ public:
     void SetRace(const string& race) {
         this->race = race;
     }
+    int GetBattleWins() const {
+        return battleWins;
+    }
 
+    void IncreaseBattleWins() {
+        battleWins++;
+    }
     void NormalAttack() override {
         
         cout << "Player attacks.\n";
@@ -70,6 +76,7 @@ public:
         output << "Role: " << player.role << "\n";
         output << "Race: " << player.race << "\n";
         output << "Health: " << player.health << "\n";
+        output << "Wins: " << player.battleWins << "\n";
         return output;
     }
 
@@ -78,6 +85,7 @@ private:
     int health;
     string role;
     string race;
+    int battleWins;
     const int specialAttackDamage;
     int normalAttackDamage;
 };
@@ -88,7 +96,7 @@ public:
     static const int specialAttackDamage;
     static int normalAttackDamage;
     Wizard() {
-        SetHealth(80);
+        SetHealth(90);
     }
     int GetNormalAttackDamage() const override {
         return normalAttackDamage;
@@ -99,7 +107,7 @@ public:
     }
 
     void NormalAttack() override {
-        normalAttackDamage = rand() % 5 + 10;
+        normalAttackDamage = rand() % 1 + 10;
         cout << "Wizard: slams with staff | dealing: " << normalAttackDamage << " damage" << "\n";
     }
 
@@ -110,7 +118,7 @@ public:
 };
 
 const string Wizard::specialAttackName = "Ice Bolt";
-const int Wizard::specialAttackDamage = 20;
+const int Wizard::specialAttackDamage = 30;
 int Wizard::normalAttackDamage;
 
 class Knight : public Player {
@@ -129,7 +137,7 @@ public:
         return specialAttackDamage;
     }
     void NormalAttack() override {
-        normalAttackDamage = rand() % 5 + 30;
+        normalAttackDamage = rand() % 1 + 20;
         cout << "Knight: swings sword | dealing: " << normalAttackDamage << " damage" << "\n";
     }
 
@@ -291,34 +299,72 @@ public:
 class TimeToBattle {
 public:
     void GoToBattle(Player* player, Enemy* enemy) {
+        int numberOfAttacksPlayer=0;
+        int numberOfAttacksEnemy=0;
+
         cout << "A wild " << enemy->GetSpeciesName() << " appears\n";
         cout << player->GetName() << " the " << player->GetRole() << " HP: " << player->GetHealth() << " | " << enemy->GetSpeciesName() << " HP: " << enemy->GetHealth() << "\n";
         cout << "\n";
-        int playerDamage = player->GetNormalAttackDamage() + player->GetSpecialAttackDamage();
-        int enemyDamage = enemy->GetNormalAttackDamage() + enemy->GetTauntDamage();
 
-        while (player->GetHealth() >= 0 || enemy->GetHealth() >= 0) {
+
+        while (player->GetHealth() > 0 || enemy->GetHealth() > 0) {
+            int playerDamage;
+            int enemyDamage;
+
+
             player->NormalAttack();
-
-            enemy->NormalAttack();
-
-            player->SpecialAttack();
-            enemy->TauntPlayer();
-
-
-            player->SetHealth(player->GetHealth() - enemyDamage);
-            if (player->GetHealth() <= 0) {
-                player->SetHealth(0);
-            }
+            playerDamage = player->GetNormalAttackDamage();
             enemy->SetHealth(enemy->GetHealth() - playerDamage);
+            numberOfAttacksPlayer++;
             if (enemy->GetHealth() <= 0) {
                 enemy->SetHealth(0);
+                break;
             }
+
+            enemy->NormalAttack();
+            enemyDamage = enemy->GetNormalAttackDamage();
+            player->SetHealth(player->GetHealth() - enemyDamage);
+            numberOfAttacksEnemy++;
+            if (player->GetHealth() <= 0) {
+                player->SetHealth(0);
+                break;
+            }
+
+            player->SpecialAttack();
+            playerDamage = player->GetSpecialAttackDamage();
+            enemy->SetHealth(enemy->GetHealth() - playerDamage);
+            numberOfAttacksPlayer++;
+            if (enemy->GetHealth() <= 0) {
+                enemy->SetHealth(0);
+                break;
+            }
+
+            enemy->TauntPlayer();
+            enemyDamage = enemy->GetTauntDamage();
+            player->SetHealth(player->GetHealth() - enemyDamage);
+            numberOfAttacksEnemy++;
+            if (player->GetHealth() <= 0) {
+                player->SetHealth(0);
+                break;
+            }  
+
         }  
+        cout <<"\n";
+        cout << "Player's hp after battle: " << player->GetHealth() << ", with " << numberOfAttacksPlayer << " attacks" << "\n";
+        cout << "Enemy's hp after battle: " << enemy->GetHealth() << ", with " << numberOfAttacksEnemy << " attacks" << "\n";
+        cout << "\n";
 
+        if (player->GetHealth() <= 0) {
+            cout <<"The " << enemy->GetSpeciesName() << " wins the battle!!!! " << "\n";
+            cout << player->GetName() << " the " << player->GetRole() << " will be deleted :( " << "\n";
 
-        cout << "Player's hp after battle: " << player->GetHealth() << "\n";
-        cout << "Enemy's hp after battle: " << enemy->GetHealth() << "\n";
+        }
+        if (enemy->GetHealth() <= 0) {
+            cout << player->GetName() << " the " << player->GetRole() << " wins the battle!! " << "\n";
+            cout << "Heals to full HP." << "\n";
+            player->IncreaseBattleWins();
+
+        }
     }
 
 private:
@@ -452,10 +498,23 @@ private:
         if (firstPlayer >= 1 && firstPlayer <= players.size() && secondPlayer >= 1 && secondPlayer <= players.size() && firstPlayer != secondPlayer) {
             ClearConsole();
             cout << "First Player:\n";
-            cout << players[firstPlayer - 1];
+            cout << *(players[firstPlayer - 1]);
             cout << "\n";
             cout << "Second Player:\n";
-            cout << players[secondPlayer - 1];
+            cout << *(players[secondPlayer - 1]);
+            cout << "\n";
+            if (players[firstPlayer - 1]->GetRole() == players[secondPlayer - 1]->GetRole()){
+                cout << "Classes are the same. " << "\n";
+            }
+            else {
+                cout << "Classes are different. " << "\n";
+            }
+            if (players[firstPlayer - 1]->GetRace() == players[secondPlayer - 1]->GetRace()) {
+                cout << "Races are the same. " << "\n";
+            }
+            else {
+                cout << "Races are different. " << "\n";
+            }
             cout << "\n";
         }
         else {
@@ -467,7 +526,7 @@ private:
         ClearConsole();
         for (int i = 0; i < players.size(); ++i) {
             cout << "Player " << i + 1 << ":\n";
-            cout << players[i];
+            cout << *(players[i]);
             cout << "\n";
         }
     }
@@ -477,11 +536,11 @@ private:
         TimeToBattle timeToBattle;
 
         cout << "Select a player to go to battle (1 to " << players.size() << "): ";
-        int playerIndex;
-        cin >> playerIndex;
+        int playerChoice;
+        cin >> playerChoice;
         ClearConsole();
-        if (playerIndex >= 1 && playerIndex <= players.size()) {
-            Player* selectedPlayer = players[playerIndex - 1];
+        if (playerChoice >= 1 && playerChoice <= players.size()) {
+            Player* selectedPlayer = players[playerChoice - 1];
 
             Enemy* enemy = ChooseRandomEnemy();
             cout << "Battle Log:\n";
@@ -495,6 +554,18 @@ private:
             cout << "Enemy~\n";
             cout << *enemy;
             cout << "\n";
+            if (selectedPlayer->GetHealth() <= 0) {
+                delete selectedPlayer;
+                players.erase(players.begin() + (playerChoice - 1));
+            }
+            if (enemy->GetHealth() <= 0) { //heals player if wins
+                if (selectedPlayer->GetRole() == "Knight") {
+                    selectedPlayer->SetHealth(120);
+                }
+                else if (selectedPlayer->GetRole() == "Wizard") {
+                    selectedPlayer->SetHealth(90);
+                }
+            }
         }
         else {
             
