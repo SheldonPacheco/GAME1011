@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
+#include <ctime>
 using namespace std;
 
 void ClearConsole() {
@@ -15,7 +15,7 @@ public:
 
 class Player : public GameObject {
 public:
-    Player() : name("No Player"), health(0), role("No Role"), race("No Race"), specialAttackDamage(0) {}
+    Player() : name("No Player"), health(0), role("No Role"), race("No Race"), specialAttackDamage(0), normalAttackDamage(0){}
 
     
     string GetName() const {
@@ -56,7 +56,7 @@ public:
     }
 
     virtual int GetNormalAttackDamage() const {
-        return rand() % 5 + 10;
+        return normalAttackDamage;
     }
 
     virtual int GetSpecialAttackDamage() const {
@@ -79,16 +79,19 @@ private:
     string role;
     string race;
     const int specialAttackDamage;
+    int normalAttackDamage;
 };
 
 class Wizard : public Player {
 public:
     static const string specialAttackName;
     static const int specialAttackDamage;
-
-
+    static int normalAttackDamage;
+    Wizard() {
+        SetHealth(80);
+    }
     int GetNormalAttackDamage() const override {
-        return rand() % 5 + 10;
+        return normalAttackDamage;
     }
 
     int GetSpecialAttackDamage() const override {
@@ -96,49 +99,54 @@ public:
     }
 
     void NormalAttack() override {
-        int damage = rand() % 5 + 10;  
-        cout << "Wizard slams with staff | dealing: " << damage << " damage" << "\n";
+        normalAttackDamage = rand() % 5 + 10;
+        cout << "Wizard: slams with staff | dealing: " << normalAttackDamage << " damage" << "\n";
     }
 
     void SpecialAttack() override {
         
-        cout << "Wizard casts: " << specialAttackName << " | dealing: " << specialAttackDamage << " damage" << "\n";
+        cout << "Wizard: casts " << specialAttackName << " | dealing: " << specialAttackDamage << " damage" << "\n";
     }
 };
 
 const string Wizard::specialAttackName = "Ice Bolt";
 const int Wizard::specialAttackDamage = 20;
+int Wizard::normalAttackDamage;
 
 class Knight : public Player {
 public:
     static const string specialAttackName;
     static const int specialAttackDamage;
-
-
+    static int normalAttackDamage;
+    Knight() {
+        SetHealth(120);
+    }
     int GetNormalAttackDamage() const override{
-        return rand() % 5 + 30;
+        return normalAttackDamage;
     }
 
     int GetSpecialAttackDamage() const override {
         return specialAttackDamage;
     }
     void NormalAttack() override {
-        int damage = rand() % 5 + 30;  
-        cout << "Knight swings sword | dealing: " << damage << " damage" << "\n";
+        normalAttackDamage = rand() % 5 + 30;
+        cout << "Knight: swings sword | dealing: " << normalAttackDamage << " damage" << "\n";
     }
 
     void SpecialAttack() override {
         
-        cout << "Knight uses: " << specialAttackName <<"with shield" << " dealing " << specialAttackDamage << " damage" << "\n";
+        cout << "Knight: uses " << specialAttackName <<" with shield" << " | dealing: " << specialAttackDamage << " damage" << "\n";
     }
+
 };
 
 const string Knight::specialAttackName = "Bunt";
 const int Knight::specialAttackDamage = 15;
+int Knight::normalAttackDamage;
 
 class Enemy : public GameObject {
 public:
-    Enemy() : health(0), tauntDamage(0){}
+    Enemy() : health(0), tauntDamage(0), normalAttackDamage(0){}
 
     
     int GetHealth() const {
@@ -149,7 +157,7 @@ public:
         this->health = health;
     }
     virtual int GetNormalAttackDamage() const {
-        return rand() % 10 + 10;  
+        return normalAttackDamage;
     }
 
     virtual int GetTauntDamage() const {
@@ -163,6 +171,7 @@ public:
     }
 
     virtual void TauntPlayer() = 0;  
+    virtual string GetSpeciesName() const = 0;
 
     friend ostream& operator<<(ostream& output, const Enemy& enemy) {
         output << "Enemy health: " << enemy.health << "\n";
@@ -172,129 +181,147 @@ public:
 private:
     int health;
     int tauntDamage;
+    int normalAttackDamage;
 };
 
 class Orc : public Enemy {
 public:
-    Orc(const string& speciesName, const vector<string>& taunts, int tauntDamage, int health) : speciesName(speciesName), taunts(taunts), tauntDamage(tauntDamage) {
+    Orc(const string& speciesName, const vector<string>& taunts, int tauntDamage, int health, int normalAttackDamage) : speciesName(speciesName), taunts(taunts), tauntDamage(tauntDamage), normalAttackDamage(normalAttackDamage){
         SetHealth(health);
     }
     int GetNormalAttackDamage() const override{
-        return rand() % 10 + 10;  
+        return normalAttackDamage;
     }
 
     int GetTauntDamage() const override{
 
         return tauntDamage;
     }
-    
+    string GetSpeciesName() const override {
+
+        return speciesName;
+    }
     void TauntPlayer() {
         
         int chosenTaunt = rand() % taunts.size();
         tauntDamage = 15;
-        cout << speciesName << " Orc use taunt: " << taunts[chosenTaunt] << " | dealing: " << tauntDamage << " damage" << "\n";
-        SetHealth(GetHealth() - tauntDamage);
+        cout << speciesName << ": uses taunt: " << taunts[chosenTaunt] << " | dealing: " << tauntDamage << " damage" << "\n";
     }
 
     void NormalAttack() override {
         
-        int damage = rand() % 10 + 10;  
-        cout << speciesName << " Orc attacks | dealing: " << damage << " damage" << "\n";
+        normalAttackDamage = rand() % 10 + 10;
+        cout << speciesName << ": attacks | dealing: " << normalAttackDamage << " damage" << "\n";
     }
 
 private:
     string speciesName;
     vector<string> taunts;
     int tauntDamage;
+    int normalAttackDamage;
 };
 
 class Undead : public Enemy {
 public:
-    Undead(const string& speciesName, const vector<string>& taunts, int tauntDamage, int health) : speciesName(speciesName), taunts(taunts), tauntDamage(tauntDamage) {
+    Undead(const string& speciesName, const vector<string>& taunts, int tauntDamage, int health, int normalAttackDamage) : speciesName(speciesName), taunts(taunts), tauntDamage(tauntDamage), normalAttackDamage(normalAttackDamage){
         SetHealth(health);
     }
     int GetNormalAttackDamage() const override {
-        return rand() % 5 + 10;
+        return normalAttackDamage;
     }
 
     int GetTauntDamage() const override{
 
         return tauntDamage;
     }
-   
+    string GetSpeciesName() const override {
+
+        return speciesName;
+    }
     void TauntPlayer() {
         
         int chosenTaunt = rand() % taunts.size();
         tauntDamage = 20;
-        cout << speciesName << " Undead uses taunt: " << taunts[chosenTaunt] << " | dealing: " << tauntDamage << "damage" << "\n";
-        SetHealth(GetHealth() - tauntDamage);
+        cout << speciesName << ": uses taunt: " << taunts[chosenTaunt] << " | dealing: " << tauntDamage << " damage" << "\n";
     }
 
     void NormalAttack() override {
         
-        int damage = rand() % 5 + 10;  
-        cout << speciesName << " Undead attacks | dealing: " << damage << " damage" << "\n";
+        normalAttackDamage = rand() % 5 + 10;
+        cout << speciesName << ": attacks | dealing: " << normalAttackDamage << " damage" << "\n";
     }
 
 private:
     string speciesName;
     vector<string> taunts;
     int tauntDamage;
+    int normalAttackDamage;
 };
 
 class BigOrc : public Orc {
 public:
-    BigOrc() : Orc("Big Orc", { "I'm a big orc, yells at player"},20, 120) {}
+    BigOrc() : Orc("Big Orc", { "I'm a big orc, yells at player"},20, 120, 0) {}
 };
 
 class SmallOrc : public Orc {
 public:
-    SmallOrc() : Orc("Small Orc", { "I'm a small Orc, laughs at player"},20, 80) {}
+    SmallOrc() : Orc("Small Orc", { "I'm a small Orc, laughs at player"},20, 80, 0) {}
 };
 
 class RegularOrc : public Orc {
 public:
-    RegularOrc() : Orc("Orc", { "I'm an Orc, pushes player "},20, 100) {}
+    RegularOrc() : Orc("Orc", { "I'm an Orc, pushes player "},20, 100, 0) {}
 };
 
 class Zombie : public Undead {
 public:
-    Zombie() : Undead("Zombie", { "Brrrrr, I'm a zombie, bites player"},20, 100) {}
+    Zombie() : Undead("Zombie", { "rrrrrrrr, I'm a zombie, bites player"},20, 100, 0) {}
 };
 
 class Skeleton : public Undead {
 public:
-    Skeleton() : Undead("Skeleton", { "I'm a boney skeleton, haunts player"},20, 110) {}
+    Skeleton() : Undead("Skeleton", { "I'm a boney skeleton, haunts player"},20, 110, 0) {}
 };
 
 class Ghost : public Undead {
 public:
-    Ghost() : Undead("Ghost", { "I'm something you cant see, fears player"},20, 90) {}
+    Ghost() : Undead("Ghost", { "I'm something you cant see, fears player"},20, 90, 0) {}
 };
 
 class TimeToBattle {
 public:
     void GoToBattle(Player* player, Enemy* enemy) {
-        player->NormalAttack();
-        enemy->NormalAttack();
-
-        player->SpecialAttack();
-        enemy->TauntPlayer();
-
-        AdjustHealth(player, enemy);
-    }
-
-private:
-    void AdjustHealth(Player* player, Enemy* enemy) {
+        cout << "A wild " << enemy->GetSpeciesName() << " appears\n";
+        cout << player->GetName() << " the " << player->GetRole() << " HP: " << player->GetHealth() << " | " << enemy->GetSpeciesName() << " HP: " << enemy->GetHealth() << "\n";
+        cout << "\n";
         int playerDamage = player->GetNormalAttackDamage() + player->GetSpecialAttackDamage();
         int enemyDamage = enemy->GetNormalAttackDamage() + enemy->GetTauntDamage();
 
-        player->SetHealth(player->GetHealth() - enemyDamage);
-        enemy->SetHealth(enemy->GetHealth() - playerDamage);
+        while (player->GetHealth() >= 0 || enemy->GetHealth() >= 0) {
+            player->NormalAttack();
+
+            enemy->NormalAttack();
+
+            player->SpecialAttack();
+            enemy->TauntPlayer();
+
+
+            player->SetHealth(player->GetHealth() - enemyDamage);
+            if (player->GetHealth() <= 0) {
+                player->SetHealth(0);
+            }
+            enemy->SetHealth(enemy->GetHealth() - playerDamage);
+            if (enemy->GetHealth() <= 0) {
+                enemy->SetHealth(0);
+            }
+        }  
+
 
         cout << "Player's hp after battle: " << player->GetHealth() << "\n";
         cout << "Enemy's hp after battle: " << enemy->GetHealth() << "\n";
     }
+
+private:
 };
 
 class CharacterCreation {
@@ -302,7 +329,7 @@ public:
     void MainMenu(vector<Player*>& players) {
         ClearConsole();
         cout << "Welcome :)\n";
-
+        cout << "\n";
         int menuChoice = 0;
         do {
             if (players.size() <= 3) {
@@ -310,7 +337,6 @@ public:
             }
             if (players.size() >= 2) {
                 cout << "2. Compare characters\n";
-                cout << "3. Display all characters\n";
             }
             if (players.size() >= 1) {             
                 cout << "3. Display all characters\n";
@@ -338,7 +364,7 @@ public:
             }
             else if (menuChoice == 5) {
                 ClearConsole();
-                cout << "bye bye\n";
+                cout << "bye :)\n";
             }
         } while (menuChoice != 5);
     }
@@ -355,43 +381,56 @@ private:
         string name = "";
         string role = "";
         string race = "";
-        cout << "Enter player name: ";
+        cout << "Enter player's name: ";
         cin.ignore();
         getline(cin, name);
+        ClearConsole();
+        cout << "Roles:\n";
+        cout << "1. Wizard\n";
+        cout << "2. Knight\n";
+        int roleChoice;
+        cout << "Choose a role (enter the number you want):";
+        cin >> roleChoice;
 
-        cout << "Choose a role (Wizard or Knight): ";
-        cin >> role;
-
-        cout << "Choose a race (enter the number you want):\n";
+        if (roleChoice == 1) {
+            role = "Wizard";
+        }
+        else if (roleChoice == 2) {
+            role = "Knight";
+        }
+        else {
+            cin >> roleChoice;
+        }
+        ClearConsole();
+        
         for (int i = 0; i < raceChoices.size(); ++i) {
             cout << i + 1 << ". " << raceChoices[i] << "\n";
         }
 
         int raceChoice;
+        cout << "Choose a race (enter the number you want):";
         cin >> raceChoice;
-
+        
         if (raceChoice >= 1 && raceChoice <= raceChoices.size()) {
             race = raceChoices[raceChoice - 1];
         }
         else {
-            cout << "Invalid choice: \n";
             cin >> raceChoice;
-            race = raceChoices[raceChoice - 1];
         }
 
         if (role == "Wizard") {
-            Wizard* wizard = new Wizard();  
+            Wizard* wizard = new Wizard();
             wizard->SetName(name);
             wizard->SetRole(role);
             wizard->SetRace(race);
-            players.push_back(wizard);  
+            players.push_back(wizard);
         }
         else if (role == "Knight") {
-            Knight* knight = new Knight();  
+            Knight* knight = new Knight();
             knight->SetName(name);
             knight->SetRole(role);
             knight->SetRace(race);
-            players.push_back(knight);  
+            players.push_back(knight);
         }
 
         ClearConsole();
@@ -440,20 +479,22 @@ private:
         cout << "Select a player to go to battle (1 to " << players.size() << "): ";
         int playerIndex;
         cin >> playerIndex;
-
+        ClearConsole();
         if (playerIndex >= 1 && playerIndex <= players.size()) {
             Player* selectedPlayer = players[playerIndex - 1];
 
             Enemy* enemy = ChooseRandomEnemy();
-            cout << "Battle started!\n";
+            cout << "Battle Log:\n";
             timeToBattle.GoToBattle(selectedPlayer, enemy);
 
-            
-            cout << "\nBattle report:\n";
-            cout << "Player:\n";
+            cout << "\n";
+            cout << "Battle report:\n";
+            cout << "Player~\n";
             cout << *selectedPlayer;
-            cout << "Enemy:\n";
+            cout << "\n";
+            cout << "Enemy~\n";
             cout << *enemy;
+            cout << "\n";
         }
         else {
             
@@ -461,26 +502,28 @@ private:
     }
 
     Enemy* ChooseRandomEnemy() const {
-        int choice = rand() % 9;
-        if (choice <= 1) {
+        int choice = rand() % 5;
+
+        if (choice == 0) {
             return new Skeleton();
         }
-        else if (choice <= 4) {
+        else if (choice == 1) {
             return new BigOrc();
         }
-        else if (choice <= 6) {
+        else if (choice == 2) {
             return new SmallOrc();
         }
-        else if (choice <= 8) {
+        else if (choice == 3) {
             return new RegularOrc();
         }
-        else {
+        else if (choice == 4) {
             return new Zombie();
         }
     }
 };
 
 int main() {
+    srand(static_cast<unsigned>(time(nullptr)));
     CharacterCreation creation;
     vector<Player*> players;
     creation.MainMenu(players);
