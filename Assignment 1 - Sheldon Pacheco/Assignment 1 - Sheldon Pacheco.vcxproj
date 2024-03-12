@@ -127,7 +127,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Assignment 1 - Sheldon Pacheco.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="CharacterCreation.cpp" />
+    <ClCompile Include="Enemy.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="TimeToBattle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CharacterCreation.h" />
+    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="TimeToBattle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
