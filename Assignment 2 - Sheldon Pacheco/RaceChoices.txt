@@ -1,0 +1,5 @@
+Races: 
+ 1. Human
+ 2. Elf
+ 3. Vampire
+Choose a race (enter the number you want):

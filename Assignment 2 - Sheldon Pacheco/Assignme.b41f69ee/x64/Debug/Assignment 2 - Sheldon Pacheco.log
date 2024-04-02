@@ -1,0 +1,7 @@
+﻿  CharacterCreation.cpp
+  Main.cpp
+  Player.cpp
+  TimeToBattle.cpp
+  Generating Code...
+E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\CharacterCreation.h(282,1): warning C4715: 'CharacterCreation::ChooseRandomEnemy': not all control paths return a value
+  Assignment 2 - Sheldon Pacheco.vcxproj -> E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\x64\Debug\Assignment 2 - Sheldon Pacheco.exe

@@ -1,0 +1,4 @@
+Roles: 
+ 1. Wizard
+ 2. Knight
+Choose a role (enter the number you want):
