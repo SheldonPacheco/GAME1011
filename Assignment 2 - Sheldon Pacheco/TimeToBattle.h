@@ -12,6 +12,7 @@ public:
     void StartAutoBattle(Player* player, Enemy* enemy) {
         int numberOfAttacksPlayer = 0;
         int numberOfAttacksEnemy = 0;
+        cout << "A wild " << enemy->GetSpeciesName() << " appears!";
         while (player->GetHealth() > 0 || enemy->GetHealth() > 0) {
             int playerDamage;
             int enemyDamage;

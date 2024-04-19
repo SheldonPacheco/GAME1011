@@ -183,5 +183,8 @@ class Ghost : public Undead {
 public:
     Ghost() : Undead("Ghost", { "I'm something you cant see, fears player" }, 0, 90, 0,0,0) {}
 };
-
+class Werewolf : public Undead {
+public:
+    Werewolf() : Undead("An undead Werewolf", { "Rawrrrrrrrrrrrrrr" }, 0, 200, 0, 2, 120) {}
+};
 #endif 

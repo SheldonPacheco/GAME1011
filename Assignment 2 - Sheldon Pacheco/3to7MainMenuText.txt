@@ -2,4 +2,4 @@
 4. Display all character information
 5. Start auto Battle
 6. Start Battle
-7. Start Adventure(not working)
+7. Start Adventure

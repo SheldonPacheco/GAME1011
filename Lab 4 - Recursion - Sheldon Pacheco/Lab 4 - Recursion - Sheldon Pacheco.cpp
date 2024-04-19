@@ -26,13 +26,13 @@ int main() {
     cout << "Enter a word: ";
     getline(cin, str);
 
-    // Check if the entered string is a palindrome
+    
     if (StringUtil::isPalindrome(str, 0, str.length() - 1))
         cout << "Word is a palindrome.\n";
     else
         cout << "word is not a palindrome.\n";
 
-    // Reverse the entered string
+    
     StringUtil::reverseString(str, 0, str.length() - 1);
     cout << "Word in reverse: " << str << endl;
 

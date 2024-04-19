@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "TimeToBattle.h"
+#include "TimeForAdventure.h"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -16,6 +17,7 @@ public:
     void MainMenu(vector<Player*>& players) {
         ClearConsole();
         LoadPlayerProgress(players);
+        cout << "\n";
         outputTextFromFile("WelcomeMessage.txt");
         cout << "\n";
         int menuChoice = 0;
@@ -52,7 +54,7 @@ public:
                 GoToBattle(players, menuChoice);
             }
             else if (menuChoice == 7 && players.size() >= 1) {
-                GoToBattle(players, menuChoice);
+                StartAdventure(players);
             }
             else if (menuChoice != 8) {
                 outputTextFromFile("SelectAnotherOptionText.txt");
@@ -70,7 +72,30 @@ private:
         "Elf",
         "Vampire"
     };
+    void StartAdventure(vector<Player*>& players) {
+        ClearConsole();
+        DisplayPlayers(players);
+        cout << "Select a player to go to adventure with (1 to " << players.size() << "): ";
+        int playerChoice;
+        cin >> playerChoice;
+        if (playerChoice >= 1 && playerChoice <= players.size()) {
+            Player* selectedPlayer = players[playerChoice - 1];
 
+            TimeForAdventure adventure;
+            ClearConsole();
+            adventure.StartAdventure(selectedPlayer);    
+            if (selectedPlayer->GetHealth() <= 0) {
+                delete selectedPlayer;
+                players[playerChoice - 1] = nullptr;
+                players.erase(players.begin() + (playerChoice - 1));
+                SavePlayerProgress(players);
+            }
+            if (adventure.hasPet == true || adventure.hasCrown == true) {
+                SavePlayerProgress(players);
+
+            }
+        }
+    }
     void CreatePlayer(vector<Player*>& players) {
         ClearConsole();
         string name = "";
@@ -132,9 +157,9 @@ private:
         ClearConsole();
         int firstPlayer = 0;
         int secondPlayer = 0;
+        DisplayPlayers(players);
         cout << "Enter the first player (1 to " << players.size() << "): ";
         cin >> firstPlayer;
-        ClearConsole();
         cout << "Enter the second player (1 to " << players.size() << "): ";
         cin >> secondPlayer;
         ClearConsole();
