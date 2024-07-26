@@ -58,7 +58,7 @@ public:
     void CheckLevelUp() {
         if (GetExp() >= GetLevel() * 100) {
             SetLevel(GetLevel() + 1);
-            cout << GetName() << " the " << GetRole() << " Leveled up!";
+            cout << GetName() << " the " << GetRole() << " Leveled up!!\n";
         }
     }
     void NormalAttack() override {

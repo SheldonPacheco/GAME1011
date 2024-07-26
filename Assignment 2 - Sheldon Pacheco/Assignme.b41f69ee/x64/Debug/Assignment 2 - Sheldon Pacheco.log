@@ -6,11 +6,13 @@ E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\TimeForAdv
 E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\TimeForAdventure.h(25,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   (compiling source file 'Main.cpp')
   
+  Player.cpp
   TimeForAdventure.cpp
 E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\TimeForAdventure.h(25,19): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   (compiling source file 'TimeForAdventure.cpp')
   
+  TimeToBattle.cpp
   Generating Code...
 E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\TimeForAdventure.h(587,1): warning C4715: 'TimeForAdventure::ChooseRandomEnemy': not all control paths return a value
-E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\CharacterCreation.h(306,1): warning C4715: 'CharacterCreation::ChooseRandomEnemy': not all control paths return a value
+E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\CharacterCreation.h(307,1): warning C4715: 'CharacterCreation::ChooseRandomEnemy': not all control paths return a value
   Assignment 2 - Sheldon Pacheco.vcxproj -> E:\Coding Projects\Semester 2\GAME1011\Assignment 2 - Sheldon Pacheco\x64\Debug\Assignment 2 - Sheldon Pacheco.exe

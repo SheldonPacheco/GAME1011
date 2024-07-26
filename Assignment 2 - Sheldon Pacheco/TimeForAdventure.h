@@ -344,7 +344,7 @@ private:
                     }
                     else {
                         cout << "You failed to jump over and tripped and lost 50% HP\n";
-                        player->SetHealth(player->GetHealth() * -50);
+                        player->SetHealth(player->GetHealth() -50);
                         MoveToRoom("jump", player);
                     }
                 }
@@ -560,7 +560,8 @@ private:
             }
         }
         else {
-           
+            cin.ignore();
+            cout << "Your journey has ended :( You died.";
         }
     }
     Enemy* ChooseRandomEnemy(int choice) const {
